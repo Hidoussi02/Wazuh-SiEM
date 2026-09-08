@@ -1,16 +1,15 @@
+01 — Introduction
 
-# 01 — Introduction
+Prerequisites: none — start here.
 
-**Prerequisites:** none — start here.
-
-## What you're about to build
+What you're about to build
 
 By the end of this repository's golden path, you will have built a small but realistic corporate network inside virtual machines, instrumented it so that security-relevant activity is logged, wired that logging into a SIEM (Wazuh) that detects suspicious behavior, and — in the finished design — connected detections to an incident-response and automation layer (Shuffle, IRIS, Ansible) that turns a raw alert into a handled, remediated incident.
 
 Concretely, the environment contains:
 
-- An **Active Directory domain** (`lab.local`) with a Domain Controller and Windows endpoints — this is the "company" being defended.
-- A **Kali Linux** machine playing the role of an attacker, used to safely and legally simulate real attack techniques against your own lab.
+- An Active Directory domain (`lab.local`) with a Domain Controller and Windows endpoints — this is the "company" being defended.
+- A Kali Linux machine playing the role of an attacker, used to safely and legally simulate real attack techniques against your own lab.
 - A **Wazuh** deployment (server, indexer, dashboard) that collects logs from the Windows machines and raises alerts when something matches a detection rule.
 - A **SOAR layer** (Shuffle for workflow automation, IRIS for case management) that is intended to turn high-severity Wazuh alerts into tracked incidents.
 - **Ansible** playbooks intended to carry out approved, automated remediation steps.
