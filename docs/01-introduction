@@ -1,1 +1,68 @@
 
+# 01 — Introduction
+
+**Prerequisites:** none — start here.
+
+## What you're about to build
+
+By the end of this repository's golden path, you will have built a small but realistic corporate network inside virtual machines, instrumented it so that security-relevant activity is logged, wired that logging into a SIEM (Wazuh) that detects suspicious behavior, and — in the finished design — connected detections to an incident-response and automation layer (Shuffle, IRIS, Ansible) that turns a raw alert into a handled, remediated incident.
+
+Concretely, the environment contains:
+
+- An **Active Directory domain** (`lab.local`) with a Domain Controller and Windows endpoints — this is the "company" being defended.
+- A **Kali Linux** machine playing the role of an attacker, used to safely and legally simulate real attack techniques against your own lab.
+- A **Wazuh** deployment (server, indexer, dashboard) that collects logs from the Windows machines and raises alerts when something matches a detection rule.
+- A **SOAR layer** (Shuffle for workflow automation, IRIS for case management) that is intended to turn high-severity Wazuh alerts into tracked incidents.
+- **Ansible** playbooks intended to carry out approved, automated remediation steps.
+
+## Why this project exists
+
+Reading about SIEM and SOC concepts is not the same as operating one. This project exists to close that gap: to generate real Windows/AD telemetry, write real detection logic against it, trigger real (safe, authorized, lab-only) attacks, and watch the alert actually appear — then handle it the way a SOC analyst would. The repository is also the documentation trail of that process, so someone else (or a future version of you) can rebuild it without guessing.
+
+## What problem it solves
+
+Most beginner security learning is either purely theoretical (read about MITRE ATT&CK) or purely offensive (run an exploit against a deliberately vulnerable box, with no defender side). This project puts both sides in the same environment: attack **and** detection **and** response, so the connection between "an attacker did X" and "here's what that looks like in a SIEM, and here's how a SOC handles it" is direct and reproducible.
+
+## Who can use this repository
+
+- Someone with **near-zero cybersecurity background** who wants a structured, explained path into SOC/blue-team work.
+- Someone who already knows some of the pieces (e.g. is comfortable with Windows/AD, but has never used a SIEM) and wants to fill the gaps.
+- Anyone evaluating this as a portfolio piece who wants to understand what was actually built vs. what is still planned — see `PROJECT-STATUS.md` in the repository root for that distinction at any point in time.
+
+## What the finished system does, end to end
+
+```text
+Authorized attack technique run from Kali
+        ↓
+Windows/AD generates Security + Sysmon events
+        ↓
+Wazuh agent forwards events to the Wazuh server
+        ↓
+Wazuh server decodes the event and checks it against rules
+        ↓
+A matching rule fires → alert created, MITRE ATT&CK technique attached
+        ↓
+Alert is indexed and visible on the Wazuh dashboard
+        ↓
+High-severity alert triggers a Shuffle workflow
+        ↓
+Shuffle creates/enriches a case in IRIS
+        ↓
+Approved response action is executed via Ansible
+        ↓
+Outcome is verified and logged
+```
+
+Each arrow in that chain is a chapter in this repository. Chapters after `04-lab` assume the previous chapter's steps are complete — each one names its prerequisite explicitly at the top, the way this one says "none — start here."
+
+## How to use this repository
+
+1. Read `docs/02-fundamentals` even if some terms are already familiar — later chapters use this vocabulary without re-explaining it.
+2. Follow `docs/` in numeric order the first time through; it's designed as one linear path, not a reference you jump around in.
+3. Check `PROJECT-STATUS.md` at the repository root whenever a chapter uses a `[VERIFY]` or `[PLANNED]` tag — that file tracks what's confirmed built vs. still aspirational, and is more current than any individual chapter.
+4. Screenshots referenced as `📸 [SCREENSHOT NEEDED — SS-xx]` are tracked centrally in `SCREENSHOTS.md`.
+
+## What this repository is *not*
+
+- It is not a guide to attacking systems you don't own or lack explicit authorization to test. Every attack technique documented here is scoped to the isolated lab described in `docs/04-lab`.
+- It is not a claim that every component described as `[TARGET]` architecture is currently running — see `PROJECT-STATUS.md` for the honest current-vs-target split.
